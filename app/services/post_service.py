@@ -4,13 +4,11 @@ import markdown
 
 def create_post(post_data):
     try:
-        print(":D")
         new_post = Post(
             id_user = post_data.get('id_user')
             , title = post_data.get('title')
             , content = post_data.get('content')    
         )
-        print(":D")
         print(new_post.__getstate__)
         db.session.add(new_post)
         db.session.commit()
@@ -29,6 +27,7 @@ def show_post(post_data):
 
         post_details = {
             "id_post": post.id_post
+            , "id_user": user.id_user
             , "author": user.username
             , "title": post.title
             , "content": html_content# post.content
