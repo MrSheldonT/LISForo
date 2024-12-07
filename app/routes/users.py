@@ -23,7 +23,7 @@ def login():
     else:
         return status_login, 400
 
-@user_bp.route('/update_password', methods=['POST'])
+@user_bp.route('/update_password', methods=['PATCH'])
 @token_required
 def update_password():
     data = request.json
