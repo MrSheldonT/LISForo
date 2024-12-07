@@ -9,9 +9,9 @@ def register():
     data = request.json
     status_new_user = create_user(data)
     if status_new_user['success'] == True:
-        return jsonify({'success': True, 'message': 'User registered successfully'}), 200
+        return jsonify(status_new_user), 200
     
-    return jsonify({'success': False, 'message': status_new_user['message']}), 401
+    return jsonify(status_new_user), 401
 
 @user_bp.route('/login', methods=['POST'] )
 def login():
