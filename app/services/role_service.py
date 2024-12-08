@@ -1,30 +1,12 @@
-from models import Role, User
+from app.models import Role, User
 from app import db
-
-def generate_roles():
-    try:
-        admin_role = Role(name="admin")
-        user_role = Role(name="user")
-
-        db.session.add(admin_role)
-        db.session.add(user_role)
-
-        db.session.commit()
-
-        print("Roles created successfully")
-        return True
-    except Exception as e:
-        print(f"Error creating roles: {e}")
-        return False
 
 def get_users_by_rol(id_role):
     try:
-        role = Role.query.get(id_role)
-        if not role:
-            print(f"Role with id {id_role} not found")
-            return []
-        return role.users
+        role = Role.query.get_or_404(id_role)
+        users = [{"id_user": user.id_user, "username": user.username, "email": user.email} for user in role.users]
+
+        return {"success": True, "message": "Roles created successfully", "users": users }
 
     except Exception as e:
-        print(f"Error fetching users by role {e}")
-        return None
+        return {"success": False, "message": f"Error fetching users by role {e}"}

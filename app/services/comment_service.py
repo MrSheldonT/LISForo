@@ -23,7 +23,7 @@ def show_comment(comment: Comment):
         role = Role.query.get_or_404(user.id_role)
         html_content = markdown.markdown(comment.content)
 
-        comment_details = {
+        return {
             "id_comment": comment.id_comment
             , "id_user": user.id_user
             , "id_role": role.id_role
@@ -35,14 +35,13 @@ def show_comment(comment: Comment):
             , "is_edited": comment.is_edited
             , "id_post": comment.id_post
         }
-        return comment_details
     
     except Exception as e:
         return {"success": False, "message": str(e)}
 
-def show_comments_by_user(comment_data):
+def show_comments_by_user(user_data):
     try:
-        comments = Comment.query.filter_by(id_user=comment_data.get('id_user')).all()
+        comments = Comment.query.filter_by(id_user=user_data.get('id_user')).all()
         comments_details = []
         
         for comment in comments:
@@ -52,9 +51,9 @@ def show_comments_by_user(comment_data):
     except Exception as e:
         return {"success": False, "message": str(e)}
     
-def show_comments_by_post(comment_data):
+def show_comments_by_post(post_data):
     try:
-        comments = Comment.query.filter_by(id_post=comment_data.get('id_post')).all()
+        comments = Comment.query.filter_by(id_post=post_data.get('id_post')).all()
         comments_details = []
         
         for comment in comments:
@@ -66,21 +65,17 @@ def show_comments_by_post(comment_data):
     
 def update_comment(comment_data):
     try:
-        if not 'id_comment' in comment_data:
-            return {"success": False, "message": "The comment you are trying to update is not found"} #change a not value for id_comment and others similars
-        
-        comment = Comment.query.get_or_404(comment_data.get('id_comment'))
-        role = Role.query.get_or_404(comment_data.get('id_role'))
-        
-        if comment.id_user == comment_data['id_user'] or role.name == 'admin': # admin?
-    
-            if 'content' in comment_data:
-                comment.content = comment_data['content'] # add trigger database
+        try:
+            comment = Comment.query.get_or_404(comment_data.get('id_comment'))
+        except Exception as e:
+            return {"success": False, "message": "Comment not found"}
 
+        if comment.id_user == comment_data['id_user']:
+            comment.content = comment_data['content'] # add trigger database
             db.session.commit()
             return {"success": True, "message": "Comment updated successfully"}
         
-        return {"success": False, "message": "The comment you are trying to update is not yours"}
+        return {"success": False, "message": "You do not have sufficient privileges to perform this action"}
     
     except Exception as e:
         return {"success": False, "message": str(e)}
@@ -91,7 +86,11 @@ def delete_comment(comment_data):
         if not 'id_comment' in comment_data:
             return {"success": False, "message": "The comment you are trying to delete is not found"}
         
-        comment = Comment.query.get_or_404(comment_data.get('id_comment'))
+        try:
+            comment = Comment.query.get_or_404(comment_data.get('id_comment'))
+        except Exception as e:
+            return {"success": False, "message": "Comment not found"}
+
         role = Role.query.get_or_404(comment_data.get('id_role'))
  
         if comment.id_user == comment_data['id_user'] or role.name == 'admin':
@@ -99,7 +98,7 @@ def delete_comment(comment_data):
             db.session.commit()
             return {"success": True, "message": "Comment deleted successfully"}
         
-        return {"success": False, "message": "The comment you are trying to delete is not yours"}
+        return {"success": False, "message": "You do not have sufficient privileges to perform this action"}
     
     except Exception as e:
         db.session.rollback()
