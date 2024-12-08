@@ -1,14 +1,23 @@
-from flask import Blueprint, jsonify
-from app import db
-from app.models import Role
-
+from flask import Blueprint, jsonify, request
+from app.services.role_service import generate_roles, get_users_by_rol
+from app.utils.token_management import token_required
 roles_bp = Blueprint('roles', __name__)
 
-@roles_bp.route('/',methods=['GET'])
+@roles_bp.route("/", methods=['GET'])
 def setRoles():
-    admin = Role(name="admin")
-    user = Role(name="user")
-    db.session.add(admin)
-    db.session.add(user)
-    db.session.commit()
-    return jsonify({"message": "The roles is uploaded"})
+    generate_roles()
+    return jsonify({'success': True, 'message': "The roles is uploaded"}), 200
+
+@roles_bp.route("/show_roles", methods=['GET'])
+@token_required
+def show_roles():
+
+    id_role = request.args.get('id_rol', type=int)
+    if not id_role:
+        return jsonify({'success': False, 'message': "The id_rol is not provided"}), 400
+
+    status_show_roles = get_users_by_rol(id_role)
+    if status_show_roles['success'] == True:
+        return status_show_roles, 200
+    
+    return status_show_roles, 500

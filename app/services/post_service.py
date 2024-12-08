@@ -4,13 +4,11 @@ import markdown
 
 def create_post(post_data):
     try:
-        print(":D")
         new_post = Post(
             id_user = post_data.get('id_user')
             , title = post_data.get('title')
             , content = post_data.get('content')    
         )
-        print(":D")
         print(new_post.__getstate__)
         db.session.add(new_post)
         db.session.commit()
@@ -23,12 +21,17 @@ def create_post(post_data):
     
 def show_post(post_data):
     try:
-        post = Post.query.filter_by(id_post=post_data.get('id_post')).first()
-        user = User.query.filter_by(id_user=post.id_user).first()
+        try:
+            post = Post.query.get_or_404(post_data.get('id_post'))
+        except Exception as e:
+            return {"success": False, "message": "Post not found"}
+        
+        user = User.query.get_or_404(post.id_user)
         html_content = markdown.markdown(post.content)
 
         post_details = {
             "id_post": post.id_post
+            ,  "id_user": user.id_user
             , "author": user.username
             , "title": post.title
             , "content": html_content# post.content
@@ -41,10 +44,11 @@ def show_post(post_data):
 
 def update_post(post_data):
     try:
-        if not 'id_post' in post_data:
-            return {"success": False, "message": "The post you are trying to update is not found"}
+        try:
+            post = Post.query.get_or_404(post_data.get('id_post'))
+        except Exception as e:
+            return {"success": False, "message": "Post not found"}
         
-        post = Post.query.filter_by(id_post=post_data.get('id_post')).first()
         role = Role.query.get_or_404(post_data.get('id_role'))
         
         if post.id_user == post_data['id_user'] or role.name == 'admin':
@@ -55,25 +59,28 @@ def update_post(post_data):
             db.session.commit()
             return {"success": True, "message": "Post updated successfully"}
         
-        return {"success": False, "message": "The post you are trying to update is not yours"}
+        return {"success": False, "message": "You do not have sufficient privileges to perform this action"}
     
     except Exception as e:
+        db.session.rollback()
         return {"success": False, "message": str(e)}
     
 def delete_post(post_data):
     try:
-        if not 'id_post' in post_data:
-            return {"success": False, "message": "The post you are trying to delete is not found"}
+        try:
+            post = Post.query.get_or_404(post_data.get('id_post'))
+        except Exception as e:
+            return {"success": False, "message": "Post not found"}
         
         post = Post.query.get_or_404(post_data.get('id_post'))
         role = Role.query.get_or_404(post_data.get('id_role'))
-
+        
         if post.id_user == post_data['id_user'] or role.name == 'admin':
             db.session.delete(post)
             db.session.commit()
             return {"success": True, "message": "Post deleted successfully"}
         
-        return {"success": False, "message": "The post you are trying to delete is not yours"}
+        return {"success": False, "message": "You do not have sufficient privileges to perform this action"}
     
     except Exception as e:
         db.session.rollback()

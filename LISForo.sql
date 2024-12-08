@@ -45,4 +45,20 @@ CREATE TABLE comment_likes (
     , FOREIGN KEY (id_comment) REFERENCES comments(id_comment) ON DELETE CASCADE ON UPDATE CASCADE
     , FOREIGN KEY (id_user) REFERENCES users(id_user) ON DELETE CASCADE ON UPDATE CASCADE
 );
--- MAYBE ALGÚN TRIGGER PARA VERIFICAR SI JALÓ NULL CADA QUE SE ELIMINA LOS COMENTARIOS, NO SÉ
+
+INSERT INTO roles(name) VALUES 
+    ("admin")
+    , ("user")
+;
+
+DELIMITER //
+
+CREATE TRIGGER update_comment
+BEFORE UPDATE ON comments
+FOR EACH ROW
+BEGIN
+    SET NEW.is_edited = TRUE;
+    SET NEW.updated_at = CURRENT_TIMESTAMP;
+END //
+
+DELIMITER ;
