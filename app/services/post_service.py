@@ -31,10 +31,10 @@ def show_post(post_data):
 
         post_details = {
             "id_post": post.id_post
-            ,  "id_user": user.id_user
+            , "id_user": user.id_user
             , "author": user.username
             , "title": post.title
-            , "content": html_content# post.content
+            , "content": html_content # post.content
             , "created_at": post.created_at
         }
         return {"success": True, "message": "Post consulted successfully", "post" : post_details}

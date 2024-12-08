@@ -14,8 +14,8 @@ def create_user(user_data):
             return {'success': False, 'message': password_message}
 
         if not valid_email(user_data.get('email', '')):
-            return {'success': False, 'message': "The email is invalid"}
-        
+            return {'success': False, 'message': "The email is invalid"}        
+          
         role = Role.query.filter_by(name='user').first()
        
         if not role:
@@ -36,10 +36,11 @@ def create_user(user_data):
             , email = user_data['email']
             , id_role=role.id_role
         )
-        
+       
         db.session.add(new_user)
         db.session.commit()
         return {'success': True, 'message': "User register succesfully"}
+
     
     except Exception as e:
         db.session.rollback()
@@ -58,11 +59,12 @@ def login_user(user_data):
     try:
         user = User.query.filter_by(username=user_data.get('username')).first()
         if not user:
-            return {'success': False, 'message': "The user is not exists"}
+
+            return {"success": False, "message": "The user does not exist"}
         
         if user and check_password(user_data.get('password'), user.password):
             token = create_jwt_token(user.id_user, user.id_role)
-            return {'success': True, 'message': "Login with exito", "token":token}
+            return {"success": True, "message": "Login successful", "token":token}
         else:
             return {'success': True, 'message': "The password is incorrect"}
     except Exception as e:
