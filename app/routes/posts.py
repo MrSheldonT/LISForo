@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from app.services.post_service import create_post, show_post, update_post, delete_post
+from app.services.post_service import create_post, show_post, update_post, delete_post, list_posts
 from app.utils.token_management import token_required
 
 post_bp = Blueprint('posts', __name__)
@@ -31,6 +31,15 @@ def show_post_data():
         return status_post, 200
     
     return status_post, 400 
+
+@post_bp.route("/list_posts", methods=['GET'])
+
+def list_posts_data():
+    status_posts = list_posts()
+    if status_posts['success']:
+        return status_posts, 200
+    
+    return status_posts, 400
 
 @post_bp.route("/update_post", methods=['PATCH'])
 @token_required

@@ -1,7 +1,7 @@
 from app.models import User, Role
 from app import db
 from app.utils.user_data import valid_date, valid_email, valid_password, valid_username, encrypt_password, check_password
-from app.utils.token_management import create_jwt_token, token_required
+from app.utils.token_management import create_jwt_token
 from werkzeug.exceptions import NotFound
 
 def create_user(user_data):
@@ -36,8 +36,7 @@ def create_user(user_data):
             , password = encrypt_password(user_data['password'])
             , email = user_data['email']
             , id_role=role.id_role
-        )
-       
+        )   
         db.session.add(new_user)
         db.session.commit()
         return {'success': True, 'message': "User register succesfully"}

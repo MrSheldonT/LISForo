@@ -13,17 +13,14 @@ def register():
     
     status_new_user = create_user(data)
     if status_new_user['success'] == True:
-        return status_new_user, 200
+        return status_new_user, 201
     
     return status_new_user, 400
 
 @user_bp.route('/login', methods=['POST'] )
 def login():
     data = request.json
-    print(data)
     if not data or 'username' not in data or 'password' not in data:
-        print(not data)
-        print('username' not in data)
         return jsonify({'success': False, 'message': "Parameters not provided (username, password)"}), 400
     
     status_login = login_user(data)

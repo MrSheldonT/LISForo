@@ -79,7 +79,7 @@ CREATE TABLE logs (
     , action VARCHAR(50) NOT NULL
     , performed_by INT
     , details TEXT NOT NULL
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    , created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
 

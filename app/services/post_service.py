@@ -9,7 +9,6 @@ def create_post(post_data):
             , title = post_data.get('title')
             , content = post_data.get('content')    
         )
-        print(new_post.__getstate__)
         db.session.add(new_post)
         db.session.commit()
         
@@ -36,8 +35,29 @@ def show_post(post_data):
             , "title": post.title
             , "content": html_content # post.content
             , "created_at": post.created_at
+            , "likes": post.likes
         }
         return {"success": True, "message": "Post consulted successfully", "post" : post_details}
+    
+    except Exception as e:
+        return {"success": False, "message": str(e)}
+
+def list_posts():
+    try:
+        posts = Post.query.all()
+        post_details = [
+            {
+                "id_post": post.id_post,
+                "id_user": post.id_user,
+                "author": User.query.get(post.id_user).username,
+                "title": post.title,
+                "content": markdown.markdown(post.content),
+                "created_at": str(post.created_at),
+                "likes": len(post.likes),
+            }
+            for post in posts
+        ]
+        return {"success": True, "message": "Posts retrieved successfully", "posts": post_details}
     
     except Exception as e:
         return {"success": False, "message": str(e)}

@@ -23,7 +23,7 @@ def publish_comment():
 def edit_comment():
     data = request.json
     if not 'id_comment' in data or not 'content' in data:
-            return {"success": False, "message": "Parameters not provided (id_comment, content)"} 
+            return {"success": False, "message": "Parameters not provided (id_comment, content)"}, 400
         
     status_comments = update_comment(data)
     if status_comments['success'] == True:
@@ -55,8 +55,12 @@ def comment_by_user():
 @comments_bp.route('/comments_by_post', methods=['GET'])
 @token_required
 def comments_by_post():
-    data = request.json
-    status_comments = show_comments_by_post(data)
+    
+    id_post = request.args('id_post', type=int)
+    if not 'id_post':
+        return {"success": False, "message": "Parameters not provided (id_comment, content)"} , 400
+
+    status_comments = show_comments_by_post({id_post})
 
     if status_comments['success'] == True:
         return status_comments, 200
