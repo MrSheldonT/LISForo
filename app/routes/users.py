@@ -38,7 +38,7 @@ def login():
 def update_password():
     data = request.json
     data['id_user_request'] = request.id_user
-    if not data or 'password' not in data or not 'id_user' in data or not 'id_user_request' in data:
+    if not data or 'password' not in data or not 'id_user_account' in data or not 'id_user_request' in data: #no enviar algo como id_role o password
         return jsonify({'success': False, 'message': "Parameters not provided (id_user_request, password, id_user)"}), 400
 
     status_update_password = update_user(data)

@@ -1,4 +1,4 @@
-from app.models import Role, User
+from app.models import Role
 from app import db
 
 def get_users_by_rol(id_role):

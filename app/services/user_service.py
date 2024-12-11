@@ -2,6 +2,7 @@ from app.models import User, Role
 from app import db
 from app.utils.user_data import valid_date, valid_email, valid_password, valid_username, encrypt_password, check_password
 from app.utils.token_management import create_jwt_token, token_required
+from werkzeug.exceptions import NotFound
 
 def create_user(user_data):
     try:
@@ -40,7 +41,6 @@ def create_user(user_data):
         db.session.add(new_user)
         db.session.commit()
         return {'success': True, 'message': "User register succesfully"}
-
     
     except Exception as e:
         db.session.rollback()
@@ -52,6 +52,8 @@ def show_user(user_data):
         role = Role.query.get_or_404(user.id_role)
         return {'success': True, 'username' : user.username, 'email': user.email, 'role': role.name}
     
+    except NotFound as e:
+        return {'success': False, 'message': "The user id does not belong to any record, please try again"}
     except Exception as e:
         return {'success': False, 'message': str(e)}
     
@@ -59,7 +61,6 @@ def login_user(user_data):
     try:
         user = User.query.filter_by(username=user_data.get('username')).first()
         if not user:
-
             return {"success": False, "message": "The user does not exist"}
         
         if user and check_password(user_data.get('password'), user.password):
@@ -67,6 +68,9 @@ def login_user(user_data):
             return {"success": True, "message": "Login successful", "token":token}
         else:
             return {'success': True, 'message': "The password is incorrect"}
+    
+    except NotFound as e:
+        return {'success': False, 'message': f"User with username {user_data.get('username')} was not found."}
     except Exception as e:
         return {'success': False, 'message': str(e)}
 
@@ -101,7 +105,6 @@ def update_user(user_data):
             user_account.username = user_data['username']
             db.session.commit()
             return {'success': True, 'message': "Username changed successfully "} 
-
         
         if 'email' in user_data:
             user_account.email = user_data['email']

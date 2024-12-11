@@ -1,11 +1,10 @@
 from flask import Blueprint, jsonify, request
-from app.services.role_service import generate_roles, get_users_by_rol
+from app.services.role_service import get_users_by_rol
 from app.utils.token_management import token_required
 roles_bp = Blueprint('roles', __name__)
 
 @roles_bp.route("/", methods=['GET'])
 def setRoles():
-    generate_roles()
     return jsonify({'success': True, 'message': "The roles is uploaded"}), 200
 
 @roles_bp.route("/show_roles", methods=['GET'])
