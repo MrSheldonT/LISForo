@@ -38,11 +38,20 @@ class Comment(db.Model):
     post = db.relationship('Post', backref='comments')
     user = db.relationship('User', backref='comments')
 
-class CommentLike(db.Model):
+class PostLike(db.Model):
     __tablename__ = "comment_likes"
     id_comment_like = db.Column(db.Integer, primary_key=True)
     id_comment = db.Column(db.Integer, db.ForeignKey('comments.id_comment', ondelete='CASCADE', onupdate='CASCADE'))
     id_user = db.Column(db.Integer, db.ForeignKey('users.id_user', ondelete='CASCADE', onupdate='CASCADE') )
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     comment = db.relationship('Comment', backref='likes')
+    user = db.relationship('User', backref='likes')
+
+class PostLike(db.Model):
+    __tablename__ = "post_likes"
+    id_post_like = db.Column(db.Integer, primary_key=True)
+    id_post = db.Column(db.Integer, db.ForeignKey('posts.id_post', ondelete='CASCADE', onupdate='CASCADE'))
+    id_user = db.Column(db.Integer, db.ForeignKey('users.id_user', ondelete='CASCADE', onupdate='CASCADE') )
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    comment = db.relationship('Post', backref='likes')
     user = db.relationship('User', backref='likes')

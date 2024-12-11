@@ -3,7 +3,7 @@ USE LISForo;
 
 CREATE TABLE roles (
     id_role INT AUTO_INCREMENT PRIMARY KEY,
-    name ENUM('admin', 'user') NOT NULL UNIQUE --role_name
+    name ENUM('admin', 'user') NOT NULL UNIQUE
 );
 
 CREATE TABLE users (
@@ -43,6 +43,15 @@ CREATE TABLE comment_likes (
     , id_user INT NOT NULL
     , created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     , FOREIGN KEY (id_comment) REFERENCES comments(id_comment) ON DELETE CASCADE ON UPDATE CASCADE
+    , FOREIGN KEY (id_user) REFERENCES users(id_user) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE TABLE post_likes (
+    id_post_like INT AUTO_INCREMENT PRIMARY KEY
+    , id_post INT NOT NULL
+    , id_user INT NOT NULL
+    , created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    , FOREIGN KEY (id_post) REFERENCES posts(id_post) ON DELETE CASCADE ON UPDATE CASCADE
     , FOREIGN KEY (id_user) REFERENCES users(id_user) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
