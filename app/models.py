@@ -22,7 +22,7 @@ class Post(db.Model):
     id_user = db.Column(db.Integer, db.ForeignKey('users.id_user', ondelete='CASCADE', onupdate='CASCADE') )
     title = db.Column(db.String(50), nullable=False)
     content = db.Column(db.Text, nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=datetime.now)
     
     user =  db.relationship('User', backref='posts')
 
@@ -32,7 +32,7 @@ class Comment(db.Model):
     id_post = db.Column(db.Integer, db.ForeignKey('posts.id_post', ondelete='CASCADE', onupdate='CASCADE'))
     id_user = db.Column(db.Integer, db.ForeignKey('users.id_user', ondelete='CASCADE', onupdate='CASCADE'))
     content = db.Column(db.String(255), nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=datetime.now)
     updated_at = db.Column(db.DateTime, nullable=True)
     is_edited = db.Column(db.Boolean, nullable=True)
     post = db.relationship('Post', backref='comments')
@@ -43,7 +43,7 @@ class CommentLike(db.Model):
     id_comment_like = db.Column(db.Integer, primary_key=True)
     id_comment = db.Column(db.Integer, db.ForeignKey('comments.id_comment', ondelete='CASCADE', onupdate='CASCADE'))
     id_user = db.Column(db.Integer, db.ForeignKey('users.id_user', ondelete='CASCADE', onupdate='CASCADE') )
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=datetime.now)
     comment = db.relationship('Comment', backref='likes')
     user = db.relationship('User', backref='comment_likes')
 
@@ -52,6 +52,14 @@ class PostLike(db.Model):
     id_post_like = db.Column(db.Integer, primary_key=True)
     id_post = db.Column(db.Integer, db.ForeignKey('posts.id_post', ondelete='CASCADE', onupdate='CASCADE'))
     id_user = db.Column(db.Integer, db.ForeignKey('users.id_user', ondelete='CASCADE', onupdate='CASCADE') )
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=datetime.now)
     comment = db.relationship('Post', backref='likes')
     user = db.relationship('User', backref='post_likes')
+
+class Log(db.Model):
+    id_log = db.Column(db.Integer, primary_key=True)
+    table_name = db.Column(db.String(50), nullable=False)
+    action = db.Column(db.String(50), nullable=False)
+    performed_by = db.Column(db.Integer)
+    details = db.Column(db.Text, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.now)

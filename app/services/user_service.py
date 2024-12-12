@@ -20,7 +20,7 @@ def create_user(user_data):
         role = Role.query.filter_by(name='user').first()
        
         if not role:
-            return {'success': False, 'message': "Rol user is not exists"}
+            return {'success': False, 'message': "Rol default is not exists"} #tr
         
         exists_user_username = User.query.filter_by(username = user_data.get('username')).first()
         exists_user_email = User.query.filter_by(email = user_data.get('email')).first()
@@ -49,6 +49,7 @@ def show_user(user_data):
     try:
         user = User.query.get_or_404(user_data.get('id_user'))
         role = Role.query.get_or_404(user.id_role)
+
         return {'success': True, 'username' : user.username, 'email': user.email, 'role': role.name}
     
     except NotFound as e:

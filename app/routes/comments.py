@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from app.utils.token_management import token_required
-from app.services.comment_service import create_comment, show_comment, update_comment, delete_comment, show_comments_by_user, show_comments_by_post
+from app.services.comment_service import create_comment, update_comment, delete_comment, show_comments_by_user, show_comments_by_post
 
 comments_bp = Blueprint('comments', __name__)
 
@@ -9,7 +9,8 @@ comments_bp = Blueprint('comments', __name__)
 def publish_comment():
     data = request.json
     data['id_user'] = request.id_user
-    if 'id_post' not in data or 'content':
+    print(data)
+    if 'id_post' not in data or 'content' not in data:
         return jsonify({'success': False, 'message': "Parameters not provided (id_post, content)"}), 400
     
     new_comment = create_comment(data)

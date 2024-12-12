@@ -1,15 +1,21 @@
 from app import db
 from app.models import PostLike, User, Role
+from werkzeug.exceptions import NotFound
 
 def like_post(like_data):
     try:
+
+        if PostLike.query.filter_by(id_post=like_data['id_post'], id_user=like_data['id_user']).first():
+            return {"success": False, "message": "Like already exists"}
+        
         post_like = PostLike(
             id_post = like_data['id_post']
             , id_user = like_data['id_user']
         )
-
+        
         db.session.add(post_like)
         db.session.commit()
+        return {"success": True, "message": "Like"}
 
     except Exception as e:
         db.session.rollback()
@@ -54,21 +60,30 @@ def show_likes_of_post_by_user(comment_data):
     except Exception as e:
         return {"success": False, "message": str(e)}
     
+def is_liked_by_user(post_like):
+    try:
+        post_like_instance = PostLike.query.filter_by(id_post=post_like.get('id_post'), id_user=post_like.get('id_user')).first()
+        if post_like_instance:
+            return {"success": True, 'message': "Like", 'isLiked': True } 
+        return {"success": True, 'message': "No Like", 'isLiked': False } 
+    except Exception as e:
+        return {"success": False, "message": str(e), 'isLiked': False}
+    
 def remove_like_post(post_like):
     try:
-
-        if not 'id_post_like' in post_like:
-            return {"success": False, "message": "No like to remove found"}
+        post_like_instance = PostLike.query.filter_by(id_post=post_like.get('id_post'), id_user=post_like.get('id_user')).first()
         
-        post_like = PostLike.query.get_or_404(post_like.get('id_post_like'))
+        if not post_like_instance:
+            return {'success': False, 'message': "The like does not belong to any record, please try again"}
+
         role = Role.query.get_or_404(post_like.get('id_role'))
- 
-        if post_like.id_user == post_like['id_user'] or role.name == 'admin':
-            db.session.delete(post_like)
-            db.session.commit()
+
+        if post_like_instance.id_user == post_like['id_user'] or role.name == 'admin':
+            db.session.delete(post_like_instance)
+            db.session.commit() 
             return {"success": True, "message": "Like removed successfully"}
         
-        return {"success": False, "message": "The like you are trying to removed is not yours or you do not have privileges"}
-    
+        return {"success": False, "message": "The like you are trying to remove is not yours or you do not have privileges"}
+
     except Exception as e:
         return {"success": False, "message": str(e)}

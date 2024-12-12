@@ -12,7 +12,7 @@ def valid_email(email:str):
     return email and bool(re.fullmatch(EMAIL_PATTERN, email))
 
 def valid_username(user:str):
-    return user and bool(re.fullmatch(USER_PATTERN, user))
+    return user #and bool(re.fullmatch(USER_PATTERN, user))
 
 def valid_password(password: str):
     if len(password) <= 5:

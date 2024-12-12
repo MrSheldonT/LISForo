@@ -44,7 +44,7 @@ def show_post(post_data):
 
 def list_posts():
     try:
-        posts = Post.query.all()
+        posts = Post.query.order_by(Post.created_at.desc()).all()
         post_details = [
             {
                 "id_post": post.id_post,
